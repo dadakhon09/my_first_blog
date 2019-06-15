@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block page_head %}
+{% endblock %}
+{% block page_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="row">
+
+                    <div>
+                        <h2>Tags:</h2>
+                    </div>
+                    <a class="ml-100" href="{% url 'tag_create' %}">
+                        <button class="btn btn-primary" type="submit">Create Tag</button>
+                    </a>
+                </div>
+                {% for tag in tags %}
+                    <h4><a href="{{ tag.get_absolute_url }}">
+                        <button class="btn btn-danger">{{ tag.title }}</button>
+                    </a></h4>
+                {% endfor %}
+            </div>
+            <div class="col-lg-9">
+                <div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div>
+                        <h2>Posts:</h2>
+                    </div>
+                    <a class="ml-auto" href="{% url 'post_create' %}">
+                        <button class="btn btn-primary" type="submit">Create Post</button>
+                    </a>
+                    <div class="row">
+                        {% for post in posts %}
+                            <div class="col-lg-4">
+                                {% include 'includes/post_card_template.html' %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

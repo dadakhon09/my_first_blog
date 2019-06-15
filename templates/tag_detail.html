@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block  page_head %}
+    <title>{{ tag.title }}</title>
+    <link rel="stylesheet" href="{% static 'My_blog/css/main1.css' %}">
+{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    Tag {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <h1 class="mb-5">
+            All Posts with "{{ tag.title|title }}" tag
+            <a class="" href="{{ tag.get_update_url }}"><button class="btn btn-primary">Update this tag</button></a>
+            <a class="" href="{% url 'tag_new_delete' tag.id %}"><button class="btn btn-primary">Delete this tag</button></a>
+        </h1>
+        <div class="row">
+            {% for post in tag.posts.all %}
+                <div class="card-deck col-lg-4">
+                    {% include 'includes/post_card_template.html' %}
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+{% endblock %}

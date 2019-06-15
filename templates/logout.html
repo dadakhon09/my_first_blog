@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block  page_head %}
+    <title>Logout</title>
+{% endblock %}
+{% block page_content %}
+    <div class="container">
+       <h3>You have been logged out</h3>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                 <a href="{% url 'login' %}" class="ml-2">Log in again</a>
+            </small>
+        </div>
+    </div>
+{% endblock %}

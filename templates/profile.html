@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block page_content %}
+    <div class="content-section">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="media" style="margin-top: 50px">
+            <img width="100px" height="100px" class="rounded-circle account-img" src="{{ user.profile.image.url }}"
+                 alt="">
+            <div class="media-body">
+                <h2 class="">{{ user.username }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+                <a href="{% url 'update_profile' %}"><button class="btn btn-primary"><i class="fa fa-pencil fa-fw"></i>Edit</button></a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

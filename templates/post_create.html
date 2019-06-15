@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block page_content %}
+    <div class="container">
+        <div class="col-xl-5">
+            <h2>Creating a new post</h2>
+
+            <form action="{% url 'post_create' %}" method="POST">{% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="alert alert-danger">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Create Post</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
