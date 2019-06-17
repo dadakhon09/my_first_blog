@@ -1,11 +1,12 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import View
+from django.views.generic import View, CreateView, UpdateView
 from .models import Post, Tag
 from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin
 from .forms import TagForm, PostForm
 from django.contrib import messages
+from users.models import Profile
 
 
 def home(request):
@@ -28,15 +29,30 @@ class PostDetail(ObjectDetailMixin, View):
     template = 'post_detail.html'
 
 
-class PostCreate(ObjectCreateMixin, View):
-    form_model = PostForm
-    template = 'post_create.html'
-
-
-class PostUpdate(ObjectUpdateMixin, View):
+class PostCreate(Profile,CreateView):
     model = Post
-    model_form = PostForm
-    template = 'post_update.html'
+    form = PostForm
+    template_name = 'post_create.html'
+    fields = ['title', 'slug', 'content', 'tags', 'image']
+
+    # def get(self, request):
+    #     form = PostForm
+    #     return render(request, 'post_create.html', context={'form': form})
+    #
+    # def post(self, request):
+    #     bound_form = PostForm(request.POST)
+    #     if bound_form.is_valid():
+    #         new_obj = bound_form.save()
+    #         messages.success(request, f'{new_obj} has been created!')
+    #         return redirect(new_obj)
+    #     return render(request, 'post_create.html', context={'form': bound_form})
+
+
+class PostUpdate(UpdateView):
+    model = Post
+    form = PostForm
+    template_name = 'post_update_form.html'
+    fields = ['title', 'slug', 'content', 'tags', 'image']
 
 
 # class PostDelete(ObjectDeleteMixin, View):

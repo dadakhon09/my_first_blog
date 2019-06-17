@@ -14,5 +14,4 @@ urlpatterns = [
     path('tag/<str:slug>/update/', TagUpdate.as_view(), name="tag_update"),
     # path('tag/<str:slug>/delete/', TagDelete.as_view(), name="tag_delete"),
     path('tag/new-delete/<int:tag_id>/', TagDeleteView.as_view(), name="tag_new_delete"),
-
 ]

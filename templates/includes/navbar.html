@@ -29,9 +29,10 @@
         </ul>
         <div class="navbar-nav">
             {% if user.is_authenticated %}
-                <div class="mt-2">{{ user.username }}</div>
                 <a class="nav-item nav-link" href="{% url 'profile' %}">
+                    <div class="mt-2">{{ user.username }}
                     <img class="rounded-circle account-img" width="30px" height="30px" src="{{ user.profile.image.url }}" alt="">
+                    </div>
                 </a>
                 <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
             {% else %}
