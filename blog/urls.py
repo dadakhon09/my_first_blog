@@ -4,6 +4,7 @@ from blog.views import *
 urlpatterns = [
     path('posts/', posts_list, name="posts_list"),
     path('post/<str:slug>/', PostDetail.as_view(), name="post_detail"),
+    path('post/<str:slug>/comment', create_comment, name="comment_create_url"),
     path('posts/create/', PostCreate.as_view(), name="post_create"),
     path('post/<str:slug>/update/', PostUpdate.as_view(), name="post_update"),
     # path('post/<str:slug>/delete/', PostDelete.as_view(), name="post_delete"),

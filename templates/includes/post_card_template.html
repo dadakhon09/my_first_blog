@@ -1,23 +1,25 @@
 {% load staticfiles %}
 
 {% block page_content %}
-<div class="card">
-    <div>
-        <img style="width:40px; height:40px " class="rounded-circle" src="{{ post.author.profile.image.url }}" alt="">
-         {{ post.author }}
-    </div>
-    <img width="100" height="100" class="card-img-top" src="{{ post.image.url }}" alt="Card image cap">
-    <div class="card-body">
-        <h5 class="card-title">{{ post.title }}</h5>
-        <p class="card-text">{{ post.content }}</p>
-        <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Read More</a>
-    </div>
-    <div class="card-footer">
-        {% for tag in post.tags.all %}
-            <a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
-        {% endfor %}
+    <div class="card" style="margin-bottom:20px">
+        <div>
+            <a href="{% url 'profile' %}">
+                <img style="width:40px; height:40px " class="rounded-circle"
+                                                       src="{{ post.author.profile.image.url }}" alt="">
+            {{ post.author }}</a>
+        </div>
+        <img style="width: 300px;height: 300px" class="card-img-top" src="{{ post.image.url }}" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Read More</a>
+        </div>
+        <div class="card-footer">
+            {% for tag in post.tags.all %}
+                <a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
+            {% endfor %}
 
-        <small class="text-muted">{{ post.created_on }}</small>
+            <small class="text-muted">{{ post.created_on }}</small>
+        </div>
     </div>
-</div>
 {% endblock %}

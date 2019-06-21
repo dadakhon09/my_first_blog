@@ -1,21 +1,23 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.views.generic import View, CreateView, UpdateView
-from .models import Post, Tag
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.views.generic import View, CreateView, UpdateView, DeleteView
+from .models import *
 from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin
-from .forms import TagForm, PostForm
+from .forms import TagForm, PostForm, CommentForm
 from django.contrib import messages
-from users.models import Profile
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def home(request):
-    return render(request, 'home.html', {})
+    tags = Tag.objects.all()
+    return render(request, 'home.html', {'tags':tags})
 
 
 def posts_list(request):
     posts = Post.objects.all()
     tags = Tag.objects.all()
+
     return render(request, 'posts_list.html', context={'posts': posts, 'tags': tags})
 
 
@@ -24,16 +26,51 @@ def tags(request):
     return render(request, 'tags.html', context={'tags': tags})
 
 
-class PostDetail(ObjectDetailMixin, View):
+def create_comment(request, slug):
+    user = request.user
+    content = request.POST.get("content")
+    post = get_object_or_404(Post, slug__iexact=slug)
+    Comment.objects.create(user=user, post=post, content=content)
+    return redirect(reverse('posts_list'))
+
+
+class PostDetail(View):
     model = Post
     template = 'post_detail.html'
 
+    def get(self, request, slug):
+        comments = Comment.objects.all().order_by('-timestamp')
+        post = get_object_or_404(self.model, slug__iexact=slug)
+        return render(request, self.template, context={self.model.__name__.lower(): post, 'comments': comments})
 
-class PostCreate(Profile,CreateView):
+    # def post(self, request, slug):
+    #     post = get_object_or_404(self.model, slug__iexact=slug)
+    #     comments = Comment.objects.filter(post=post).order_by('-timestamp')
+    #
+    #     if request.method == 'POST':
+    #         comment_form = CommentForm(request.POST or None)
+    #         if comment_form.is_valid():
+    #             content = request.POST.get('content')
+    #             comment = Comment.objects.create(post=post, user=request.user, comment=content)
+    #             comment.save()
+    #             return HttpResponseRedirect(post.get_absolute_url())
+    #     else:
+    #         comment_form = CommentForm()
+    #
+    #     return render(request, self.template,
+    #                   context={'comments': comments, 'comment_form': comment_form})
+    #
+
+
+class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form = PostForm
     template_name = 'post_create.html'
     fields = ['title', 'slug', 'content', 'tags', 'image']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
     # def get(self, request):
     #     form = PostForm
@@ -48,11 +85,28 @@ class PostCreate(Profile,CreateView):
     #     return render(request, 'post_create.html', context={'form': bound_form})
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
     model = Post
     form = PostForm
     template_name = 'post_update_form.html'
     fields = ['title', 'slug', 'content', 'tags', 'image']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+
+
+class PostDeleteView(View):
+    def get(self, request, post_id):
+        Post.objects.filter(id=post_id).delete()
+        messages.success(request, 'Selected post has been deleted!')
+        return HttpResponseRedirect(reverse('posts_list'))
 
 
 # class PostDelete(ObjectDeleteMixin, View):
@@ -88,12 +142,3 @@ class TagDeleteView(View):
         Tag.objects.filter(id=tag_id).delete()
         messages.success(request, 'Selected tag has been deleted!')
         return HttpResponseRedirect(reverse('tags'))
-
-
-class PostDeleteView(View):
-    def get(self, request, post_id):
-        Post.objects.filter(id=post_id).delete()
-        messages.success(request, 'Selected post has been deleted!')
-        return HttpResponseRedirect(reverse('posts_list'))
-
-

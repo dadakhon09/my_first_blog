@@ -2,43 +2,66 @@
 {% load staticfiles %}
 {% block page_head %}
 {% endblock %}
-{% block page_content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="row">
 
-                    <div>
-                        <h2>Tags:</h2>
+{% block button %}
+    <a class="ml-auto" href="{% url 'post_create' %}">
+        <button class="btn btn-primary" type="submit">Create Post</button>
+    </a>
+{% endblock %}
+{% block page_content %}
+    <div style="overflow: hidden">
+        <div id="demo" class="carousel slide" data-ride="carousel" data-interval="2000">
+{#            <ul class="carousel-indicators">#}
+{#                {% for post in posts %}#}
+{#                    <li data-target="#demo" data-slide-to="{{ forloop }} "#}
+{#                        class="{% if forloop.first %}active {% endif %}"></li>#}
+{#                {% endfor %}#}
+{#            </ul>#}
+            <div class="carousel-inner">
+                {% for post in posts %}
+                    <div class="carousel-item  {% if forloop.first %}active {% endif %}">
+                        <div class="row">
+                            <div class="col-md-6" style="text-align:center">
+                                <a href="{% url 'post_detail' post.slug %}">
+                                    <img src="{{ post.image.url }}" alt=""
+                                         style="max-height: 500px; height: 50%;margin-top: 60px">
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="margin:100px 50px;">
+                                    <h3>{{ post.title }}</h3>
+                                    <p>{{ post.content }} </p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <a class="ml-100" href="{% url 'tag_create' %}">
-                        <button class="btn btn-primary" type="submit">Create Tag</button>
-                    </a>
-                </div>
-                {% for tag in tags %}
-                    <h4><a href="{{ tag.get_absolute_url }}">
-                        <button class="btn btn-danger">{{ tag.title }}</button>
-                    </a></h4>
                 {% endfor %}
             </div>
-            <div class="col-lg-9">
-                <div>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                <div class="row">
+            <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                <span style="margin-left: -80px" class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#demo" data-slide="next">
+                <span style="margin-right: -100px" class="carousel-control-next-icon"></span>
+            </a>
+        </div>
+
+
+        <div class="container-fluid ml-50 mt-40">
+            <div class="row">
+                <div class="col-lg-9">
                     <div>
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="row">
                         <h2>Posts:</h2>
                     </div>
-                    <a class="ml-auto" href="{% url 'post_create' %}">
-                        <button class="btn btn-primary" type="submit">Create Post</button>
-                    </a>
-                </div>
                     <div class="row">
                         {% for post in posts %}
                             <div class="col-lg-4">
@@ -47,10 +70,10 @@
                         {% endfor %}
                     </div>
 
+                </div>
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 

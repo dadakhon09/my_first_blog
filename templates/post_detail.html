@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% block  page_head %}
     <title>{{ post.title }}</title>
-    <link rel="stylesheet" href="{% static 'My_blog/css/main1.css' %}">
+    <link rel="stylesheet" href="{% static 'My_blog/css/main.css' %}">
 {% endblock %}
 
 {% block page_content %}
@@ -10,7 +10,7 @@
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">
-                   Post {{ message }}
+                    Post {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
@@ -19,14 +19,36 @@
                 {{ post.title }}
             </h1>
             <img width="300" height="300" src="{{ post.image.url }}" alt="">
-            <p>
+            <p class="mt-40">
                 {{ post.content }}
             </p>
-            <p>
+            <p class="mt-40">
                 {{ post.created_on }}
             </p>
         </div>
-    <a href="{{ post.get_update_url }}"><button class="btn btn-primary">Update this post</button></a>
-        <a class="" href="{% url 'post_new_delete' post.id %}"><button class="btn btn-primary">Delete this post</button></a>
+        <hr/>
+
+        <form action="{% url 'comment_create_url' post.slug%}" method="post">{% csrf_token %}
+             <input type="text" name="content">
+            <input type="submit" value="Submit" class="btn btn-outline-success">
+        </form>
+        <div>
+            {{ post.comments.count }} Comment{{ comments|pluralize }}
+            {% for com in post.comments.all %}
+                <blockquote class="blockquote">
+                    <p class="mb-0">{{ com.content }}</p>
+                    <footer class="blockquote-footer">by <cite title="Source Title">{{ com.user|capfirst }}</cite>
+                        on {{ com.timestamp }}</footer>
+                </blockquote>
+            {% endfor %}
+        </div>
+
+
+        <a href="{{ post.get_update_url }}">
+            <button class="btn btn-primary">Update this post</button>
+        </a>
+        <a class="" href="{% url 'post_new_delete' post.id %}">
+            <button class="btn btn-primary">Delete this post</button>
+        </a>
     </div>
 {% endblock %}

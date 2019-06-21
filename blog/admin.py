@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post, Tag
+from .models import Post, Tag, Comment
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -20,3 +20,10 @@ class TagAdmin(admin.ModelAdmin):
 
 admin.site.register(Tag, TagAdmin)
 
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post', 'content')
+    search_fields = ['user', 'post', 'content']
+
+
+admin.site.register(Comment, CommentAdmin)
