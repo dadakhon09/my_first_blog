@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block page_content %}
-    <div class="content-section">
+    <div class="container">
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">
@@ -19,6 +19,17 @@
                 <p class="text-secondary">{{ user.email }}</p>
                 <a href="{% url 'update_profile' %}"><button class="btn btn-primary"><i class="fa fa-pencil fa-fw"></i>Edit</button></a>
             </div>
+        </div>
+        <div class="mt-40">
+            <h2>All posts created by {{ user.username }}:</h2>
+            <div class="row">
+                    {% for post in author.user.author_posts.all %}
+                    <div class="card-deck col-lg-4">
+                        {% include 'includes/post_card_template.html' %}
+                    </div>
+                    {% endfor %}
+            </div>
+
         </div>
     </div>
 

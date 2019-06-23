@@ -22,7 +22,9 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    a = request.user
+    author = Profile.objects.get(user=a)
+    return render(request, 'profile.html', {'author': author})
 
 
 @login_required

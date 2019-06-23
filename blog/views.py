@@ -10,20 +10,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def home(request):
-    tags = Tag.objects.all()
-    return render(request, 'home.html', {'tags':tags})
+    return render(request, 'home.html')
 
 
 def posts_list(request):
     posts = Post.objects.all()
-    tags = Tag.objects.all()
 
-    return render(request, 'posts_list.html', context={'posts': posts, 'tags': tags})
+    return render(request, 'posts_list.html', context={'posts': posts})
 
 
 def tags(request):
-    tags = Tag.objects.all()
-    return render(request, 'tags.html', context={'tags': tags})
+    return render(request, 'tags.html', context={})
 
 
 def create_comment(request, slug):
@@ -38,28 +35,12 @@ class PostDetail(View):
     model = Post
     template = 'post_detail.html'
 
+
     def get(self, request, slug):
+        tags = Tag.objects.all()
         comments = Comment.objects.all().order_by('-timestamp')
         post = get_object_or_404(self.model, slug__iexact=slug)
-        return render(request, self.template, context={self.model.__name__.lower(): post, 'comments': comments})
-
-    # def post(self, request, slug):
-    #     post = get_object_or_404(self.model, slug__iexact=slug)
-    #     comments = Comment.objects.filter(post=post).order_by('-timestamp')
-    #
-    #     if request.method == 'POST':
-    #         comment_form = CommentForm(request.POST or None)
-    #         if comment_form.is_valid():
-    #             content = request.POST.get('content')
-    #             comment = Comment.objects.create(post=post, user=request.user, comment=content)
-    #             comment.save()
-    #             return HttpResponseRedirect(post.get_absolute_url())
-    #     else:
-    #         comment_form = CommentForm()
-    #
-    #     return render(request, self.template,
-    #                   context={'comments': comments, 'comment_form': comment_form})
-    #
+        return render(request, self.template, context={self.model.__name__.lower(): post, 'comments': comments, 'tags':tags})
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
@@ -71,18 +52,6 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
-
-    # def get(self, request):
-    #     form = PostForm
-    #     return render(request, 'post_create.html', context={'form': form})
-    #
-    # def post(self, request):
-    #     bound_form = PostForm(request.POST)
-    #     if bound_form.is_valid():
-    #         new_obj = bound_form.save()
-    #         messages.success(request, f'{new_obj} has been created!')
-    #         return redirect(new_obj)
-    #     return render(request, 'post_create.html', context={'form': bound_form})
 
 
 class PostUpdate(UserPassesTestMixin, LoginRequiredMixin, UpdateView):

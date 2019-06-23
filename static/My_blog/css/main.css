@@ -87,3 +87,11 @@
 .no-padding {
     padding: 0;
 }
+#post-context{
+    height:190px;
+    overflow: hidden;
+}
+.card-body{
+    height: 250px;
+    overflow: hidden;
+}
