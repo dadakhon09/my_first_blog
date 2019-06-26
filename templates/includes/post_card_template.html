@@ -3,17 +3,20 @@
 {% block page_content %}
     <div class="card" style="margin-bottom:20px">
         <div>
-            <a href="{% url 'profile'%}">
+            <a href="{% url 'profile' %}">
                 <img style="width:40px; height:40px " class="rounded-circle"
-                                                       src="{{ post.author.profile.image.url }}" alt="">
-            {{ post.author }}</a>
+                     src="{{ post.author.profile.image.url }}" alt="">
+                {{ post.author }}</a>
         </div>
-        <img width="300" height="300" style="height: 250px" class="card-img-top" src="{{ post.image.url }}" alt="Card image cap">
+        <a href="{{ post.get_absolute_url }}">
+            <img width="300" height="300" style="height: 250px" class="card-img-top" src="{{ post.image.url }}"
+                 alt="Card image cap">
+        </a>
         <div class="card-body">
-            <h5 class="card-title">{{ post.title }}</h5>
+            <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
             <p class="card-text">{{ post.content }}</p>
-            <a href="{{ post.get_absolute_url }}" class="btn btn-primary ">Read More</a>
         </div>
+        <a href="{{ post.get_absolute_url }}" class="btn btn-primary read_more">Read More</a>
         <div class="card-footer">
             {% for tag in post.tags.all %}
                 <a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
