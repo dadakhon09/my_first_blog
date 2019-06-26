@@ -2,13 +2,11 @@
 {% load staticfiles %}
 {% block  page_head %}
     <script>
-        $(document).ready(function(){
 
-            $(".reply_button").click(function () {
-                $(".hidden").toggle();
-            });
 
-        });
+
+
+
     </script>
     <title>{{ post.title }}</title>
     <link rel="stylesheet" href="{% static 'My_blog/css/main.css' %}">
@@ -37,7 +35,7 @@
         </div>
         <hr/>
         <h4>Leave a comment:</h4>
-        <form action="{% url 'comment_create_url' post.slug%}" method="post">{% csrf_token %}
+        <form  action="{% url 'comment_create_url' post.slug%}" method="post">{% csrf_token %}
              <input type="text" name="content">
             <input type="submit" value="Submit" class="btn btn-outline-success">
         </form>
@@ -48,9 +46,9 @@
                     <p class="mb-0">{{ com.content }} <small>( {{ com.reply.count }} reply)</small>{{ reply|pluralize }}</p>
                     <footer class="blockquote-footer">by <cite title="Source Title">{{ com.user|capfirst }}</cite>
                         on {{ com.timestamp }}</footer>
-                   <button id="btn{{ forloop.counter }}" class="reply_button btn btn-outline-primary" type="button">Reply</button>
-                    <div class="hidden">
-                        <form  action="{% url 'reply_create_url' post.slug com.pk %}" method="post">{% csrf_token %}
+                   <button  onclick="myfunction({{ forloop.counter }})" class="reply_button btn btn-outline-primary" type="button">Reply</button>
+                    <div class="hidden" id="{{ forloop.counter }}">
+                        <form  class="replyForm" action="{% url 'reply_create_url' post.slug com.pk %}" method="post">{% csrf_token %}
                         <input type="text" name="content">
                         <input type="submit" value="Reply" class="btn btn-outline-success">
                     </form>
@@ -79,5 +77,44 @@
             <button class="btn btn-primary">Delete this post</button>
         </a>
     </div>
+    <script>
+        function myfunction(commentId){
+            console.log(commentId)
+            if(document.getElementById(commentId).style.display=="block")
+            {
+                document.getElementById(commentId).style.display="none";
+            }else{
+
+                document.getElementById(commentId).style.display="block";
+            }
+
+
+
+        }
+        $(".replyForm").submit(function(e){
+
+            e.preventDefault();
+            var XHR = new XMLHttpRequest();
+            var FD = new FormData(e.target);
+
+            XHR.addEventListener("load", function(event) {
+
+            });
+            XHR.addEventListener("error", function(event) {
+                alert('Oops! Something went wrong.');
+            });
+
+            // Set up our request
+            XHR.open("POST", e.target.action);
+
+            // The data sent is what the user provided in the form
+            XHR.send(FD);
+        })
+
+
+            // Access the form element...
+
+
+    </script>
 {% endblock %}
 
