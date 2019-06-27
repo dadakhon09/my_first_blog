@@ -25,7 +25,7 @@
             <h1>
                 {{ post.title }}
             </h1>
-            <img width="auto" height="300" src="{{ post.image.url }}" alt="">
+            <img class="mt-40"  width="auto" height="300" src="{{ post.image.url }}" alt="">
             <p class="mt-40">
                 {{ post.content }}
             </p>
@@ -91,25 +91,25 @@
 
 
         }
-        $(".replyForm").submit(function(e){
-
-            e.preventDefault();
-            var XHR = new XMLHttpRequest();
-            var FD = new FormData(e.target);
-
-            XHR.addEventListener("load", function(event) {
-
-            });
-            XHR.addEventListener("error", function(event) {
-                alert('Oops! Something went wrong.');
-            });
-
-            // Set up our request
-            XHR.open("POST", e.target.action);
-
-            // The data sent is what the user provided in the form
-            XHR.send(FD);
-        })
+        {#$(".replyForm").submit(function(e){#}
+        {##}
+        {#    e.preventDefault();#}
+        {#    var XHR = new XMLHttpRequest();#}
+        {#    var FD = new FormData(e.target);#}
+        {##}
+        {#    XHR.addEventListener("load", function(event) {#}
+        {#        #}
+        {#    });#}
+        {#    XHR.addEventListener("error", function(event) {#}
+        {#        alert('Oops! Something went wrong.');#}
+        {#    });#}
+        {##}
+        {#    // Set up our request#}
+        {#    XHR.open("POST", e.target.action);#}
+        {##}
+        {#    // The data sent is what the user provided in the form#}
+        {#    XHR.send(FD);#}
+        {#})#}
 
 
             // Access the form element...
