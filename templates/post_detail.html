@@ -4,9 +4,6 @@
     <script>
 
 
-
-
-
     </script>
     <title>{{ post.title }}</title>
     <link rel="stylesheet" href="{% static 'My_blog/css/main.css' %}">
@@ -25,7 +22,7 @@
             <h1>
                 {{ post.title }}
             </h1>
-            <img class="mt-40"  width="auto" height="300" src="{{ post.image.url }}" alt="">
+            <img class="mt-40" width="auto" height="300" src="{{ post.image.url }}" alt="">
             <p class="mt-40">
                 {{ post.content }}
             </p>
@@ -35,33 +32,39 @@
         </div>
         <hr/>
         <h4>Leave a comment:</h4>
-        <form  action="{% url 'comment_create_url' post.slug%}" method="post">{% csrf_token %}
-             <input type="text" name="content">
+        <form action="{% url 'comment_create_url' post.slug %}" method="post">{% csrf_token %}
+            <input type="text" name="content">
             <input type="submit" value="Submit" class="btn btn-outline-success">
         </form>
         <div>
             {{ post.comments.count }} Comment{{ comments|pluralize }}
             {% for com in post.comments.all %}
                 <blockquote class="blockquote">
-                    <p class="mb-0">{{ com.content }} <small>( {{ com.reply.count }} reply)</small>{{ reply|pluralize }}</p>
+                    <p class="mb-0">{{ com.content }}
+                        <small>( {{ com.reply.count }} reply)</small>
+                        {{ reply|pluralize }}</p>
                     <footer class="blockquote-footer">by <cite title="Source Title">{{ com.user|capfirst }}</cite>
                         on {{ com.timestamp }}</footer>
-                   <button  onclick="myfunction({{ forloop.counter }})" class="reply_button btn btn-outline-primary" type="button">Reply</button>
+                    <button onclick="myfunction({{ forloop.counter }})" class="reply_button btn btn-outline-primary"
+                            type="button">Reply
+                    </button>
                     <div class="hidden" id="{{ forloop.counter }}">
-                        <form  class="replyForm" action="{% url 'reply_create_url' post.slug com.pk %}" method="post">{% csrf_token %}
-                        <input type="text" name="content">
-                        <input type="submit" value="Reply" class="btn btn-outline-success">
-                    </form>
+                        <form class="replyForm" action="{% url 'reply_create_url' post.slug com.pk %}"
+                              method="post">{% csrf_token %}
+                            <input type="text" name="content">
+                            <input type="submit" value="Reply" class="btn btn-outline-success">
+                        </form>
                     </div>
 
-            {% for reply in com.reply.all  %}
-                <blockquote class="blockquote ml-50">
-                <p class="mb-0">{{ reply.content }}</p>
-                <footer class="blockquote-footer">by <cite title="Source Title">{{ reply.user|capfirst }}</cite>
-                    on {{ reply.timestamp }}</footer>
-                </blockquote>
+                    {% for reply in com.reply.all %}
+                        <blockquote class="blockquote ml-50">
+                            <p class="mb-0">{{ reply.content }}</p>
+                            <footer class="blockquote-footer">by <cite
+                                    title="Source Title">{{ reply.user|capfirst }}</cite>
+                                on {{ reply.timestamp }}</footer>
+                        </blockquote>
 
-            {% endfor %}
+                    {% endfor %}
 
                 </blockquote>
 
@@ -78,42 +81,35 @@
         </a>
     </div>
     <script>
-        function myfunction(commentId){
+        function myfunction(commentId) {
             console.log(commentId)
-            if(document.getElementById(commentId).style.display=="block")
-            {
-                document.getElementById(commentId).style.display="none";
-            }else{
+            if (document.getElementById(commentId).style.display == "block") {
+                document.getElementById(commentId).style.display = "none";
+            } else {
 
-                document.getElementById(commentId).style.display="block";
+                document.getElementById(commentId).style.display = "block";
             }
 
-
-
         }
-        {#$(".replyForm").submit(function(e){#}
-        {##}
-        {#    e.preventDefault();#}
-        {#    var XHR = new XMLHttpRequest();#}
-        {#    var FD = new FormData(e.target);#}
-        {##}
-        {#    XHR.addEventListener("load", function(event) {#}
-        {#        #}
-        {#    });#}
-        {#    XHR.addEventListener("error", function(event) {#}
-        {#        alert('Oops! Something went wrong.');#}
-        {#    });#}
-        {##}
-        {#    // Set up our request#}
-        {#    XHR.open("POST", e.target.action);#}
-        {##}
-        {#    // The data sent is what the user provided in the form#}
-        {#    XHR.send(FD);#}
-        {#})#}
-
-
-            // Access the form element...
-
+    </script>
+    <script>
+        var btn = document.getElementById("btn");
+        btn.addEventListener("click", function () {
+            var ourRequest = new XMLHttpRequest();
+            ourRequest.open("GET", "http://127.0.0.1:8000/api/post/?format=json");
+            ourRequest.onload = function () {
+                if (ourRequest.status >= 200 && ourRequest.status < 400) {
+                    var ourData = JSON.parse(ourRequest.responseText);
+                    renderHTML(ourData);
+                } else {
+                    alert("Oops, an error has occured");
+                }
+                ourRequest.onerror = function () {
+                    console.log("Connection error");
+                }
+                ourRequest.save()
+            }
+        })
 
     </script>
 {% endblock %}
