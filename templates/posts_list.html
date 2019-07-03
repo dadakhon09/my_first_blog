@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% block page_head %}
-{% endblock %}
 
 {% block button %}
     <a class="ml-auto" href="{% url 'post_create' %}">
@@ -10,7 +8,7 @@
 {% endblock %}
 {% block page_content %}
     <div style="overflow: hidden">
-        <div id="demo" class="carousel slide" data-ride="carousel" data-interval="5000">
+        <div id="demo" class="carousel slide" data-ride="carousel" data-interval="4000">
 {#            <ul class="carousel-indicators">#}
 {#                {% for post in posts %}#}
 {#                    <li data-target="#demo" data-slide-to="{{ forloop }} "#}
@@ -69,7 +67,25 @@
                             </div>
                         {% endfor %}
                     </div>
-
+                    <div class="row">
+                         <div class="paginator">
+                            {% if posts.has_previous %}
+                                <a href="?page=1"> << </a>
+                                <a href="?page={{posts.previous_page_number}}"> < </a>
+                            {% endif %}
+                            {% for num in posts.paginator.page_range %}
+                                {% if posts.number == num %}
+                                    <span class="paginator-current"><a href="?page={{num}}"><strong>{{num}}</strong></a></span>
+                                {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                                    <a href="?page={{num}}">{{num}}</a>
+                                {% endif %}
+                                {% endfor %}
+                                {% if posts.has_next %}
+                                    <a href="?page={{posts.next_page_number}}"> > </a>
+                                    <a href="?page={{posts.paginator.num_pages}}"> >> </a>
+                                {% endif %}
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-3">
                     <div class="container ">
@@ -77,8 +93,11 @@
                     </div>
                 </div>
             </div>
+            
         </div>
+       
     </div>
+
 {% endblock %}
 
 

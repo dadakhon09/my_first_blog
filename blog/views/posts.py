@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, CreateView, UpdateView, ListView
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.paginator import Paginator
 
 from users.models import Profile
 from ..forms import PostForm
@@ -10,18 +11,22 @@ from ..models import *
 
 
 class PostListView(ListView):
-    model = Post
-    template_name = 'posts_list.html'
-    context_object_name = 'posts'
-
-    # def get(self,request):
-    #     all_users = Profile.objects.get(pk=pk)
-    #     post = Post.objects.all()
-    #     return render(request, 'posts_list.html', {'post':post,'all_users':all_users})
+    # model = Post
+    # template_name = 'posts_list.html'
+    # context_object_name = 'posts'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get(self,request):
+        p = Post.objects.all()
+        paginator = Paginator(p, 3)
+
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+        return render(request, 'posts_list.html', {'posts':posts})
+
 
 
 class PostDetail(View):

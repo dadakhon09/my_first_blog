@@ -58,3 +58,4 @@ class ReplyCommentRudView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return ReplyComment.objects.all()
+

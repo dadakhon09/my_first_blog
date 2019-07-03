@@ -77,60 +77,8 @@
             <button class="btn btn-primary">Delete this post</button>
         </a>
     </div>
-     <script>
-     $(document).ready(function(){
-        var $myForm = $(".commentForm")
-        $myForm.submit(function(event){
-            event.preventDefault()
-            var $formData = $(this).serialize()
-            var $thisURL = $myForm.attr('data-url') || window.location.href
-            $.ajax({
-                method: "POST",
-                url: $thisURL,
-                data: $formData,
-                success: handleFormSuccess,
-                error: handleFormError,
-            })
-        });
-        function displayTime() {
-            var str = "";
-
-            var currentTime = new Date()
-            var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-            var date = currentTime.getDate()
-            var year = currentTime.getFullYear()
-            var hours = currentTime.getHours()
-            var minutes = currentTime.getMinutes()
-
-            if (minutes < 10) {
-                minutes = "0" + minutes
-            }
-            str += months[currentTime.getMonth()]+" " + date + ", "+ year +", "+ hours + ":" + minutes;
-            if(hours > 11){
-                str += " p.m."
-            } else {
-                str += " a.m."
-            }
-            return str;
-        }
-
-         function handleFormSuccess(data,textStatus, jqXHR){
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
-            $("#commentsection").prepend("<p class=\"mb-0\">"+$("#commentContent").val()+"<small>\( "+ $("#replyCount").val()+"  reply\)</small></p><footer class=\"blockquote-footer\">by <cite title=\"Source Title\">{{ request.user|capfirst }}</cite> on "+ displayTime() +"</footer> <button onclick='myfunction({{ forloop.counter }})' class=\"reply_button btn btn-outline-primary\"  type=\"button\">Reply  </button>");
-            $myForm[0].reset();
-         }
-         function handleFormError(data, textStatus, errorThrown){
-            console.log(data)
-            console.log(textStatus)
-            console.log(errorThrown)
-         }
-     });
-</script>
    <script>
         function myfunction(commentId) {
-            console.log(commentId)
             var replybtn = document.getElementById(commentId);
 
             if (replybtn.style.display == "block") {
