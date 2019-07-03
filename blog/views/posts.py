@@ -4,6 +4,7 @@ from django.views.generic import View, CreateView, UpdateView, ListView
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
+from users.models import Profile
 from ..forms import PostForm
 from ..models import *
 
@@ -12,6 +13,11 @@ class PostListView(ListView):
     model = Post
     template_name = 'posts_list.html'
     context_object_name = 'posts'
+
+    # def get(self,request):
+    #     all_users = Profile.objects.get(pk=pk)
+    #     post = Post.objects.all()
+    #     return render(request, 'posts_list.html', {'post':post,'all_users':all_users})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,11 +29,11 @@ class PostDetail(View):
     template = 'post_detail.html'
 
     def get(self, request, slug):
-        tags = Tag.objects.all()
         comments = Comment.objects.all().order_by('-timestamp')
         post = get_object_or_404(self.model, slug__iexact=slug)
         return render(request, self.template,
-                      context={self.model.__name__.lower(): post, 'comments': comments, 'tags': tags})
+                      context={self.model.__name__.lower(): post, 'comments': comments})
+
 
 
 class PostCreate(LoginRequiredMixin, CreateView):

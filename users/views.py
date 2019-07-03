@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from .models import Profile
+from django.contrib.auth.models import User
 
 
 def register(request):
@@ -21,10 +22,11 @@ def register(request):
 
 
 @login_required
-def profile(request):
+def profile(request, pk):
     a = request.user
+    all_users = Profile.objects.get(pk=pk)
     author = Profile.objects.get(user=a)
-    return render(request, 'profile.html', {'author': author})
+    return render(request, 'profile.html', {'author': author, 'all_users':all_users})
 
 
 @login_required

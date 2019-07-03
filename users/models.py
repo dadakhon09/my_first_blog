@@ -11,7 +11,7 @@ class Profile(models.Model):
     image = models.ImageField(default='default.jpg', blank=True, null=True, upload_to='profile_pics')
     #posts = models.ManyToManyField(Post, null=True, blank=True, related_name='user_posts')
 
-    def get_profile_url(self):
+    def get_profile_url(self, pk):
         return reverse('profile', kwargs={'pk': self.pk})
 
     def __str__(self):

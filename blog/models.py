@@ -13,7 +13,7 @@ class Post(models.Model):
     tags = models.ManyToManyField('Tag', blank=True, related_name='posts')
     created_on = models.DateField(auto_now_add=True)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='author_posts')
-    image = models.ImageField(default="default_post.jpg", blank=True, null=True, upload_to='post_pics')
+    image = models.ImageField(default='default_post.jpg', blank=True, null=True, upload_to='post_pics')
 
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={'slug': self.slug})

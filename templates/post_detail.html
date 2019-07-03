@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block  page_head %}
-    <script>
-
-
-    </script>
     <title>{{ post.title }}</title>
     <link rel="stylesheet" href="{% static 'My_blog/css/main.css' %}">
 {% endblock %}
@@ -31,21 +27,22 @@
             </p>
         </div>
         <hr/>
+        <div id="">
         <h4>Leave a comment:</h4>
-        <form action="{% url 'comment_create_url' post.slug %}" method="post">{% csrf_token %}
-            <input type="text" name="content">
+        <form  class="commentForm" action="{% url 'comment_create_url' post.slug %}" method="post" data-url="{% url 'comment_create_url' post.slug %}">{% csrf_token %}
+            <input type="text" name="content" id="commentContent">
             <input type="submit" value="Submit" class="btn btn-outline-success">
         </form>
         <div>
             {{ post.comments.count }} Comment{{ comments|pluralize }}
             {% for com in post.comments.all %}
-                <blockquote class="blockquote">
+                <blockquote id="commentsection" class="blockquote">
                     <p class="mb-0">{{ com.content }}
-                        <small>( {{ com.reply.count }} reply)</small>
-                        {{ reply|pluralize }}</p>
+                        <small id="replyCount">( {{ com.reply.count }} reply)</small>
+                    </p>
                     <footer class="blockquote-footer">by <cite title="Source Title">{{ com.user|capfirst }}</cite>
                         on {{ com.timestamp }}</footer>
-                    <button onclick="myfunction({{ forloop.counter }})" class="reply_button btn btn-outline-primary"
+                    <button onclick='myfunction({{ forloop.counter }})' class="reply_button btn btn-outline-primary"
                             type="button">Reply
                     </button>
                     <div class="hidden" id="{{ forloop.counter }}">
@@ -69,7 +66,7 @@
                 </blockquote>
 
             {% endfor %}
-
+        </div>
         </div>
 
 
@@ -80,37 +77,71 @@
             <button class="btn btn-primary">Delete this post</button>
         </a>
     </div>
-    <script>
+     <script>
+     $(document).ready(function(){
+        var $myForm = $(".commentForm")
+        $myForm.submit(function(event){
+            event.preventDefault()
+            var $formData = $(this).serialize()
+            var $thisURL = $myForm.attr('data-url') || window.location.href
+            $.ajax({
+                method: "POST",
+                url: $thisURL,
+                data: $formData,
+                success: handleFormSuccess,
+                error: handleFormError,
+            })
+        });
+        function displayTime() {
+            var str = "";
+
+            var currentTime = new Date()
+            var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            var date = currentTime.getDate()
+            var year = currentTime.getFullYear()
+            var hours = currentTime.getHours()
+            var minutes = currentTime.getMinutes()
+
+            if (minutes < 10) {
+                minutes = "0" + minutes
+            }
+            str += months[currentTime.getMonth()]+" " + date + ", "+ year +", "+ hours + ":" + minutes;
+            if(hours > 11){
+                str += " p.m."
+            } else {
+                str += " a.m."
+            }
+            return str;
+        }
+
+         function handleFormSuccess(data,textStatus, jqXHR){
+            console.log(data)
+            console.log(textStatus)
+            console.log(jqXHR)
+            $("#commentsection").prepend("<p class=\"mb-0\">"+$("#commentContent").val()+"<small>\( "+ $("#replyCount").val()+"  reply\)</small></p><footer class=\"blockquote-footer\">by <cite title=\"Source Title\">{{ request.user|capfirst }}</cite> on "+ displayTime() +"</footer> <button onclick='myfunction({{ forloop.counter }})' class=\"reply_button btn btn-outline-primary\"  type=\"button\">Reply  </button>");
+            $myForm[0].reset();
+         }
+         function handleFormError(data, textStatus, errorThrown){
+            console.log(data)
+            console.log(textStatus)
+            console.log(errorThrown)
+         }
+     });
+</script>
+   <script>
         function myfunction(commentId) {
             console.log(commentId)
-            if (document.getElementById(commentId).style.display == "block") {
-                document.getElementById(commentId).style.display = "none";
+            var replybtn = document.getElementById(commentId);
+
+            if (replybtn.style.display == "block") {
+                replybtn.style.display = "none";
             } else {
-
-                document.getElementById(commentId).style.display = "block";
+                replybtn.style.display = "block";
             }
-
         }
     </script>
-    <script>
-        var btn = document.getElementById("btn");
-        btn.addEventListener("click", function () {
-            var ourRequest = new XMLHttpRequest();
-            ourRequest.open("GET", "http://127.0.0.1:8000/api/post/?format=json");
-            ourRequest.onload = function () {
-                if (ourRequest.status >= 200 && ourRequest.status < 400) {
-                    var ourData = JSON.parse(ourRequest.responseText);
-                    renderHTML(ourData);
-                } else {
-                    alert("Oops, an error has occured");
-                }
-                ourRequest.onerror = function () {
-                    console.log("Connection error");
-                }
-                ourRequest.save()
-            }
-        })
 
-    </script>
+
+
 {% endblock %}
 

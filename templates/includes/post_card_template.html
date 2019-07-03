@@ -3,7 +3,7 @@
 {% block page_content %}
     <div class="card" style="margin-bottom:20px">
         <div>
-            <a href="{% url 'profile' %}">
+            <a href="{% url 'profile' post.pk %}">
                 <img style="width:40px; height:40px " class="rounded-circle"
                      src="{{ post.author.profile.image.url }}" alt="">
                 {{ post.author }}</a>
