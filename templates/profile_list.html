@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block page_head %}
+{% endblock %}
+{% block page_content %}
+<div class="container">
+    <div class="row">
+        <h2>All users</h2>
+    </div>
+    {%for user in users%}
+    <a href="{% url 'profile' user.pk %}"><button class="btn btn-outline-primary">{{user.username}}</button></a>
+    {%endfor%}
+</div>
+{% endblock %}

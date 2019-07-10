@@ -1,95 +1,227 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% block  page_head %}
-    <title>{{ post.title }}</title>
-    <link rel="stylesheet" href="{% static 'My_blog/css/main.css' %}">
+{% block page_head %}
+<title>{{ post.title }}</title>
+<link rel="stylesheet" href="{% static 'My_blog/css/main.css' %}">
 {% endblock %}
-
 {% block page_content %}
-    <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    Post {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        <div>
-            <h1>
-                {{ post.title }}
-            </h1>
-            <img class="mt-40" width="auto" height="300" src="{{ post.image.url }}" alt="">
-            <p class="mt-40">
-                {{ post.content }}
-            </p>
-            <p class="mt-40">
-                {{ post.created_on }}
-            </p>
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        Post {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div>
+        <h1>
+            {{ post.title }}
+        </h1>
+        <img class="mt-40" width="auto" height="300" src="{{ post.image.url }}" alt="">
+        <p class="mt-40">
+            {{ post.content }}
+        </p>
+        <div class="mt-40 row">
+            <div class="col-xl-4">{{ post.created_on }}</div>
+            <div class="col-xl-2">
+                <button class="LikeButton btn {% if is_liked %}liked{% endif %}" name="post_id" type="submit">
+                    <i class="likeIcon {% if is_liked %}fa{% else %}far{% endif %} fa-2x fa-heart "></i>
+                </button>
+                <span id="like_count">{{post.likes.count}}</span>
+            </div>
+            <div class="col-xl-1">
+                <form action="{% url 'save_post' post.id %}" method="post">{%csrf_token%}
+                    <button class="btn BookmarkButton {% if is_saved %} saved {% endif%}" name="post_id">
+                        <i class="{% if is_saved %}fa{%else %}far{% endif %} fa-2x fa-bookmark"></i>
+                    </button>
+                </form>
+            </div>
         </div>
-        <hr/>
-        <div id="">
+    </div>
+    <hr />
+    <div id="">
         <h4>Leave a comment:</h4>
-        <form  class="commentForm" action="{% url 'comment_create_url' post.slug %}" method="post" data-url="{% url 'comment_create_url' post.slug %}">{% csrf_token %}
+        <form class="commentForm" action="{% url 'comment_create_url' post.slug %}" method="post" data-url="{% url 'comment_create_url' post.slug %}">{% csrf_token %}
             <input type="text" name="content" id="commentContent">
-            <input type="submit" value="Submit" class="btn btn-outline-success">
+            <input type="submit" value="Submit" class="btn btn-outline-success" id="comment-create-post">
         </form>
         <div>
             {{ post.comments.count }} Comment{{ comments|pluralize }}
             {% for com in post.comments.all %}
-                <blockquote id="commentsection" class="blockquote">
-                    <p class="mb-0">{{ com.content }}
-                        <small id="replyCount">( {{ com.reply.count }} reply)</small>
-                    </p>
-                    <footer class="blockquote-footer">by <cite title="Source Title">{{ com.user|capfirst }}</cite>
-                        on {{ com.timestamp }}</footer>
-                    <button onclick='myfunction({{ forloop.counter }})' class="reply_button btn btn-outline-primary"
-                            type="button">Reply
+            <blockquote id="commentsection" class="blockquote">
+                <p class="mb-0">{{ com.content }}
+                    <small id="replyCount">( {{ com.reply.count }} reply)</small>
+                </p>
+                <footer class="blockquote-footer">by <cite title="Source Title">{{ com.user|capfirst }}</cite>
+                    on {{ com.timestamp }}</footer>
+                <div class="parent">
+                    <button class="reply_button btn btn-outline-primary replyButton" type="button">
+                        Reply
                     </button>
-                    <div class="hidden" id="{{ forloop.counter }}">
-                        <form class="replyForm" action="{% url 'reply_create_url' post.slug com.pk %}"
-                              method="post">{% csrf_token %}
-                            <input type="text" name="content">
-                            <input type="submit" value="Reply" class="btn btn-outline-success">
+                    <div class="hidden abccc">
+                        <form class="replyForm" method="post">{% csrf_token %}
+                            <input id="reply_input" type="text" name="content">
+                            <input type="submit" value="Reply" class="btn btn-outline-success reply-send" data-url="{% url 'replycomment-create' com.id %}">
                         </form>
                     </div>
-
-                    {% for reply in com.reply.all %}
-                        <blockquote class="blockquote ml-50">
-                            <p class="mb-0">{{ reply.content }}</p>
-                            <footer class="blockquote-footer">by <cite
-                                    title="Source Title">{{ reply.user|capfirst }}</cite>
-                                on {{ reply.timestamp }}</footer>
-                        </blockquote>
-
-                    {% endfor %}
-
+                </div>
+                {% for reply in com.reply.all %}
+                <blockquote id="replysection" class="blockquote ml-50">
+                    <p class="mb-0">{{ reply.content }}</p>
+                    <footer class="blockquote-footer">by <cite title="Source Title">{{ reply.user|capfirst }}</cite>
+                        on {{ reply.timestamp }}</footer>
                 </blockquote>
-
-            {% endfor %}
+                {% endfor %}
+            </blockquote> {% endfor %}
         </div>
-        </div>
-
-
-        <a href="{{ post.get_update_url }}">
-            <button class="btn btn-primary">Update this post</button>
-        </a>
-        <a class="" href="{% url 'post_new_delete' post.id %}">
-            <button class="btn btn-primary">Delete this post</button>
-        </a>
     </div>
-   <script>
-        function myfunction(commentId) {
-            var replybtn = document.getElementById(commentId);
+    <a href="{{ post.get_update_url }}">
+        <button class="btn btn-primary">Update this post</button>
+    </a>
+    <a class="" href="{% url 'post_new_delete' post.id %}">
+        <button class="btn btn-primary">Delete this post</button>
+    </a>
+</div>
+<script>
+let BookmarkButton = $('.BookmarkButton');
 
-            if (replybtn.style.display == "block") {
-                replybtn.style.display = "none";
+BookmarkButton.click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: "{% url 'save_post' post.id %}",
+        processData: false,
+        contentType: false,
+        method: "post",
+        success: function() {
+            let isSaved = BookmarkButton.attr('class');
+            if (isSaved.includes("saved")) {
+                BookmarkButton.html("<i class=\"far fa-2x fa-bookmark\"></i>")
+                BookmarkButton.removeClass("saved");
             } else {
-                replybtn.style.display = "block";
+                BookmarkButton.html("<i class=\"fa fa-2x fa-bookmark\"></i>")
+                BookmarkButton.addClass("saved");
             }
+        },
+        error: function() {
+            alert('Ooops!');
         }
-    </script>
+    });
+});
+
+let likeButton = $('.LikeButton'),
+    likeCounter = $('#like_count'),
+    likeIcon = $("  ");
+
+likeButton.click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: "{% url 'like_post' post.id %}",
+        processData: false,
+        contentType: false,
+        method: "post",
+        success: function() {
+            // get class name
+            let isLiked = likeButton.attr("class");
+
+            if (isLiked.includes("liked")) { // dislike
+                //increament the counter
+                let currentValue = parseInt(likeCounter.text());
+                likeCounter.html(currentValue - 1);
+
+                likeButton.html("<i class=\"far likeIcon fa-2x fa-heart\"></i>")
+
+                // highlight the heart icon
+                // likeIcon.html("\f004");
+
+                likeButton.removeClass("liked");
+            } else { // like
+
+                let currentValue = parseInt(likeCounter.text());
+                likeCounter.html(currentValue + 1);
+
+                likeButton.html("<i class=\"fa likeIcon fa-2x fa-heart\"></i>")
+
+                // likeIcon.html("\f004");
+
+                likeButton.addClass("liked");
+            }
+
+
+            // else replace and decrement the value
+
+
+        },
+        error: function() {
+            alert('Ooops!');
+        }
+    })
+});
 
 
 
+$('#comment-create-post').on('click', function(e) {
+    e.preventDefault();
+    let h1 = '{% url "replycomment-create"'
+    let h2 = '%}'
+    let f = new FormData();
+    f.append('text', $('input[name="content"]').val());
+    f.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+    $.ajax({
+        url: "{% url 'comment-create-new' post.id %}",
+        data: f,
+        processData: false,
+        contentType: false,
+        method: "POST",
+        success: function(data) {
+            console.log(data);
+            $("#commentsection").prepend(`<p class="mb-0">${data.comment.content}
+                        <small id="replyCount">( ${data.reply_count} reply)</small>
+                    </p>
+                    <footer class="blockquote-footer">by <cite title="Source Title">${data.comment.user}</cite>
+                        on ${data.comment.timestamp}</footer>
+                    <button class="reply_button btn btn-outline-primary replyButton"
+                            type="button">Reply
+                    </button>
+                    <div class="hidden abccc">
+                        <form class="replyForm"{% csrf_token %}
+                              method="post">
+                            <input type="text" name="content">
+                            <input type="hidden" name="comment_id" data-comment-id="${data.comment.id}">
+                            <input type="submit" value="Reply" class="btn btn-outline-success reply-send" data-url="${h1} ${data.comment.id} ${h2}">
+                        </form>
+                    </div>`);
+        },
+        error: function(data) {
+            alert('Ooops!');
+        }
+    });
+});
+$(".reply-send").click(function(e) {
+    e.preventDefault();
+    let f = new FormData();
+    f.append('text', $(this).parent().find('input[name="content"]').val());
+    f.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+    $.ajax({
+        url: $(this).data('url'),
+        data: f,
+        processData: false,
+        contentType: false,
+        method: "POST",
+        success: function(data) {
+            $('#replysection').prepend(`<p class="mb-0"> ${data.reply.content}</p>
+                            <footer class="blockquote-footer">by <cite
+                                    title="Source Title">${data.reply.user}</cite>
+                                on ${data.reply.timestamp}</footer>`)
+        },
+        error: function(data) {
+            alert('Ooops!');
+        }
+    });
+});
+
+$(".replyButton").click(function(e) {
+    let s = $(this).parent().find('.abccc');
+    s.css('display', s.css('display') === 'none' ? 'block' : 'none');
+});
+</script>
 {% endblock %}
-

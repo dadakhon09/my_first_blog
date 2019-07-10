@@ -1,12 +1,12 @@
 from django.contrib import admin
-
 from .models import Post, Tag, Comment, ReplyComment
+
 
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'id', 'slug', 'created_on')
     search_fields = ['title', 'content']
-    # prepopulated_fields = {'slug': ('title',)}
+    prepopulated_fields = {'slug': ('title',)}
 
 
 admin.site.register(Post, PostAdmin)
@@ -34,3 +34,5 @@ class ReplyCommentAdmin(admin.ModelAdmin):
     search_fields = ['user', 'comment_reply', 'content']
 
 admin.site.register(ReplyComment, ReplyCommentAdmin)
+
+

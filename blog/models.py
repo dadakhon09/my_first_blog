@@ -6,6 +6,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 
+
+
 class Post(models.Model):
     title = models.CharField(max_length=200, unique=True, db_index=True)
     slug = models.SlugField(max_length=200, blank=True)
@@ -14,6 +16,8 @@ class Post(models.Model):
     created_on = models.DateField(auto_now_add=True)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='author_posts')
     image = models.ImageField(default='default_post.jpg', blank=True, null=True, upload_to='post_pics')
+    likes = models.ManyToManyField(User, blank=True, related_name="likes")
+    saves = models.ManyToManyField(User,blank=True,related_name='saved_posts')
 
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={'slug': self.slug})
@@ -30,20 +34,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-    #
-    # def _get_unique_slug(self):
-    #     slug = slugify(self.title)
-    #     unique_slug = slug
-    #     num = 1
-    #     if not Post.objects.filter(slug=unique_slug).exists():
-    #         unique_slug = '{}-{}'.format(slug, num)
-    #         num += 1
-    #     return unique_slug
-    #
-    # def save(self, *args, **kwargs):
-    #     if not self.slug:
-    #         self.slug = self._get_unique_slug()
-    #     super().save(*args, **kwargs)
+
 
 
 @receiver(post_save, sender=Post)

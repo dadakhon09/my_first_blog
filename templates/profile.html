@@ -1,35 +1,131 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
-
+{% block button %}
+<a class="ml-auto" href="{% url 'post_create' %}">
+    <button class="btn btn-primary" type="submit">Create Post</button>
+</a>
+{% endblock %}
 {% block page_content %}
-    <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-xl-4">
+            <div class="media mt-40">
+                <img width="100px" height="100px" class="rounded-circle account-img" src="{{ all_users.user.profile.image.url }}" alt="" style="margin-right: 20px">
+                <div class="media-body">
+                    <h2 class="">{{ all_users }}</h2>
+                    {% if is_logged %}
+                    <a href="{% url 'update_profile'  %}">
+                        <button class="btn btn-primary">
+                            <i class="fa fa-pencil fa-fw"></i>
+                            Edit
+                        </button>
+                    </a>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {% endif %}
-        
-        <div class="media" style="margin-top: 50px">
-            <img width="100px" height="100px" class="rounded-circle account-img" src="{{ all_users.user.profile.image.url }}"
-                 alt="">
-            <div class="media-body">
-                <h2 class="">{{ all_users }}</h2>
-                <p class="text-secondary">{{ user.email }}</p>
-                <a href="{% url 'update_profile' %}"><button class="btn btn-primary"><i class="fa fa-pencil fa-fw"></i>Edit</button></a>
             </div>
         </div>
-        <div class="mt-40">
-            <h2>All posts created by {{ all_users }}:</h2>
-            <div class="row">
-                {% for post in all_users.user.author_posts.all %}
-                    <div class="card-deck col-lg-4">
-                        {% include 'includes/post_card_template.html' %}
-                    </div>
-                    {% endfor %}
-            </div>
+        <div class="col-xl-3 mt-40">
+            <p class="heart"><a href="" style="text-decoration:none; color:black"><i class="fa fa-2x fa-heart LikeButton"></i>Liked posts</a></p>
+            <p class="bookmark"><a href="" style="text-decoration:none; color: black"><i class="fa fa-2x fa-bookmark"></i>Saved posts</a></p>
+        </div>
+        <div class="col-xl-2 mt-40 ">
+            <p class="all"><a href="" style="text-decoration:none;color:black"><i class="fa fa-2x fa-reply-all"></i>All posts</a></p>
         </div>
     </div>
+    <div class="mt-40 posts-content created_section">
+        <h2>Posts created by {{ all_users }}:</h2>
+        <div class="row">
+            {% if all_users.user.author_posts.count == 0 %}
+            <h3 style="color:red">{{all_users|capfirst}} didn't create any posts</h3>
+            {% else %}
+            {% for post in all_users.user.author_posts.all %}
+            <div class="card-deck col-lg-4">
+                {% include 'includes/post_card_template.html' %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="mt-40 like_section posts-content">
+        <h2>Liked posts of {{ all_users }}:</h2>
+        <div class="row">
+            {% if all_users.user.likes.count == 0 %}
+            <h3 style="color:red">{{all_users|capfirst}} didn't like any posts</h3>
+            {% else %}
+            {% for post in all_users.user.likes.all %}
+            <div class="card-deck col-lg-4">
+                {% include 'includes/post_card_template.html' %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="mt-40 saved_section posts-content">
+        <h2>Saved posts of {{ all_users }}:</h2>
+        <div class="row">
+            {% if all_users.user.saved_posts.count == 0 %}
+            <h3 style="color:red">{{all_users|capfirst}} didn't save any posts</h3>
+            {% else %}
+            {% for post in all_users.user.saved_posts.all %}
+            <div class="card-deck col-lg-4">
+                {% include 'includes/post_card_template.html' %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+$('.heart').click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        processData: false,
+        contentType: false,
+        success: function() {
+            $('.posts-content').addClass('hidden');
+            $('.like_section').removeClass('hidden');
+        },
+        error: function() {
+            alert('Ooops!');
+        }
+    });
+});
+
+$('.bookmark').click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        processData: false,
+        contentType: false,
+        success: function() {
+            $('.posts-content').addClass('hidden');
+            $('.saved_section').removeClass('hidden');
+        },
+        error: function() {
+            alert('Ooops!');
+        }
+    });
+});
+
+$('.all').click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        processData: false,
+        contentType: false,
+        success: function() {
+            $('.posts-content').removeClass('hidden');
+        },
+        error: function() {
+            alert('Ooops!');
+        }
+    });
+});
+</script>
 {% endblock %}
