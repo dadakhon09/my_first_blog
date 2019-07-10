@@ -81,13 +81,14 @@ WSGI_APPLICATION = 'wsgi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'my_blog',
-        'USER': 'dadakhon',
-        'PASSWORD': '12345',
+        'HOST': 'boonvmkbevvqdwey6yfo-postgresql.services.clever-cloud.com'
+        'NAME': 'boonvmkbevvqdwey6yfo',
+        'USER': 'uctwqlcivzeagezxkrej',
+        'PASSWORD': '3IhVzef9U9zGa3fdDW32',
     }
 }
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
+#db_from_env = dj_database_url.config(conn_max_age=600)
+#DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
